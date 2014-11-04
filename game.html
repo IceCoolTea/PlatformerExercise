@@ -1,0 +1,134 @@
+<html>
+
+<head>
+
+    <script src="phaser.js"></script>
+
+</head>
+
+<body>
+    <script type="text/javascript">
+        var gameXreso = 600;
+        var gameYreso = 600;
+        var game = new Phaser.Game(gameXreso, gameYreso, Phaser.CANVAS, 'Platformer Exercise', {
+            preload: preload,
+            create: create,
+            update: update,
+            render: render
+        })
+         //All parameters are optional but you usually want to set width and height
+         //Remember that the game object inherits many properties and methods!
+
+            function preload() {
+                //Assets to be loaded before create() is called
+                game.load.tilemap('map1', 'map/map1.json', null, Phaser.Tilemap.TILED_JSON);
+                game.load.image('bricks1', 'img/bricks1.png');
+                game.load.image('sky', 'img/sky.png');
+                game.load.image('cbg', 'img/cbg.png');
+                game.load.image('cfg', 'img/cfg.png');
+                game.load.spritesheet('dude', 'img/playerrunning.png', 46, 48);
+
+
+            }
+        var bg;
+        var player;
+        var cursors;
+        var jumpButton;
+        var facing = 'left';
+        var jumpTimer = 0;
+        var layer;
+        var map;
+        var tileset;
+
+        function create() {
+            //Adding sprites, sounds, etc...
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+
+            game.stage.backgroundColor = '#000000';
+            bg = game.add.tileSprite(0, 0, gameXreso, gameYreso, 'sky');
+            bg.fixedToCamera = true;
+            bg2 = game.add.tileSprite(0, 0, gameXreso, gameYreso, 'cbg');
+            bg2.fixedToCamera = true;
+            bg3 = game.add.tileSprite(0, 0, gameXreso, gameYreso, 'cfg');
+            bg3.fixedToCamera = true;
+
+
+            map = game.add.tilemap('map1');
+
+            map.addTilesetImage('bricks1');
+
+            layer = map.createLayer('Tile Layer 1');
+            layer.resizeWorld();
+            layer.debug = true;
+            map.setCollisionBetween(0, 100);
+
+            game.physics.arcade.gravity.y = 1500;
+
+            player = game.add.sprite(30, 40, 'dude');
+            game.physics.enable(player, Phaser.Physics.ARCADE);
+
+            player.body.bounce.y = 0.05;
+            player.body.collideWorldBounds = true;
+            player.body.setSize(20, 47, 10, 1);
+
+            player.animations.add('left', [16, 15, 14, 13, 12, 11, 10], 10, true);
+            player.animations.add('turn', [8], 20, true);
+            player.animations.add('right', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
+
+            game.camera.follow(player);
+
+            cursors = game.input.keyboard.createCursorKeys();
+            jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        }
+
+        function update() {
+            //Game logic, collision, movement, etc...
+            game.physics.arcade.collide(player, layer);
+            player.body.velocity.x = 0;
+
+            if (cursors.left.isDown) {
+                player.body.velocity.x = -200;
+
+                if (facing != 'left') {
+                    player.animations.play('left');
+                    facing = 'left';
+                }
+            } else if (cursors.right.isDown) {
+                player.body.velocity.x = 200;
+
+                if (facing != 'right') {
+                    player.animations.play('right');
+                    facing = 'right';
+                }
+            } else {
+                if (facing != 'idle') {
+                    player.animations.stop();
+
+                    if (facing == 'left') {
+                        player.frame = 17;
+                    } else {
+                        player.frame = 8;
+                    }
+
+                    facing = 'idle';
+
+                }
+            }
+
+            if (jumpButton.isDown && player.body.onFloor() && game.time.now > jumpTimer) {
+                player.body.velocity.y = -450;
+                jumpTimer = game.time.now + 350;
+            }
+
+
+        }
+
+        function render() {
+            //game.debug.bodyInfo(player, 16, 24);
+            //game.debug.text(game.time.physicsElapsed, 32, 32
+            game.debug.body(player);
+        }
+    </script>
+</body>
+
+</html>
