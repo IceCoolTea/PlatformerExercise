@@ -22,7 +22,7 @@
             function preload() {
                 //Assets to be loaded before create() is called
                 game.load.tilemap('map1', 'map/map1.json', null, Phaser.Tilemap.TILED_JSON);
-                game.load.image('bricks1', 'img/bricks1.png');
+                game.load.image('bricks1', 'img/ShinyNoiseBricks2.png.png');
                 game.load.image('sky', 'img/sky.png');
                 game.load.image('cbg', 'img/cbg.png');
                 game.load.image('cfg', 'img/cfg.png');
@@ -59,7 +59,7 @@
 
             layer = map.createLayer('Tile Layer 1');
             layer.resizeWorld();
-            layer.debug = true;
+            //layer.debug = true;
             map.setCollisionBetween(0, 100);
 
             game.physics.arcade.gravity.y = 1500;
